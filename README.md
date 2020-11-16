@@ -1,6 +1,6 @@
 # SLA for Open API Initiative Specification
 
-![SLA4OAI](https://github.com/isa-group/SLA4OAI-Specification/main/media/SLA4OAI.png)
+![SLA4OAI](https://github.com/isa-group/SLA4OAI-Specification/raw/main/media/SLA4OAI.png)
 
 ![Build Status](https://github.com/isa-group/SLA4OAI-Specification/workflows/validate-markdown/badge.svg)
 
