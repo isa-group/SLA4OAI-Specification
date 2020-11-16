@@ -1,5 +1,7 @@
 # SLA for Open API Initiative Specification
 
+![SLA4OAI](https://github.com/isa-group/SLA4OAI-Specification/main/media/SLA4OAI.png)
+
 ![Build Status](https://github.com/isa-group/SLA4OAI-Specification/workflows/validate-markdown/badge.svg)
 
 The goal of the [SLA4OAI Specification](versions/1.0.0-Draft.md) is to promote an open specification for
