@@ -1,4 +1,4 @@
-# SLA for Open API Initiative Specification
+# SLA for the Open API Initiative Specification
 
 ![SLA4OAI](https://github.com/isa-group/SLA4OAI-Specification/raw/main/media/SLA4OAI-150-tr.png)
 
