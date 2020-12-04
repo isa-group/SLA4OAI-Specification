@@ -12,3 +12,7 @@ This GitHub project is the starting point for SLA4OAI. Here you will find the in
 ## Current Version - 1.0.0 - DRAFT
 
 The current version of the SLA4OAI Specification **Draft** is 1.0.0 and you can find it [here](versions/1.0.0-Draft.md)
+
+## License
+
+This Specification follows the [Apache Licence 2.0](LICENSE).
