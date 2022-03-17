@@ -1,0 +1,658 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "Configuration": {
+            "additionalProperties": {
+                "type": "string"
+            },
+            "description": "Define the default configurations, later each plan can be override it.",
+            "id": "Configuration",
+            "title": "Configuration",
+            "type": "object"
+        },
+        "Context": {
+            "description": "Holds the main information of the SLA context",
+            "id": "Context",
+            "properties": {
+                "api": {
+                    "description": "Indicates a URI (absolute or relative) describing the API, described in the OpenAPI format, to be instrumented.",
+                    "examples": [
+                        "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v3.0/petstore.yaml"
+                    ],
+                    "format": "uri",
+                    "title": "api",
+                    "type": "string"
+                },
+                "consumer": {
+                    "description": "Consumer information, data about the entity that consumes the service. This field is required in case of the context type is instance.",
+                    "examples": [
+                        "MyConsumer"
+                    ],
+                    "title": "consumer",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "The identification of the SLA context.",
+                    "examples": [
+                        "PetPlans"
+                    ],
+                    "title": "id",
+                    "type": "string"
+                },
+                "provider": {
+                    "description": "Provider information: data about the owner/host of the API. This field is required in case of the context type is instance.",
+                    "examples": [
+                        "MyProvider"
+                    ],
+                    "title": "provider",
+                    "type": "string"
+                },
+                "sla": {
+                    "default": "1.0",
+                    "description": "Indicates the version of the SLA format.",
+                    "examples": [
+                        "1.0",
+                        "1.0.0"
+                    ],
+                    "pattern": "(?:^\\d.\\d.\\d$)|^(?:^\\d.\\d$)",
+                    "title": "sla",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "The type of SLA based on the Lifecycle of Agreement (plans or instance).",
+                    "enum": [
+                        "instance",
+                        "plans"
+                    ],
+                    "examples": [
+                        "plans",
+                        "instance"
+                    ],
+                    "title": "type",
+                    "type": "string"
+                },
+                "validity": {
+                    "$ref": "#/definitions/Validity",
+                    "description": "Availability of the service expressed via time slots. This field is required in case of the context type is instance.",
+                    "id": "Validity",
+                    "title": "validity"
+                }
+            },
+            "required": [
+                "api",
+                "id",
+                "sla",
+                "type"
+            ],
+            "title": "Context",
+            "type": "object"
+        },
+        "Cost": {
+            "description": "Cost associated to this plan.",
+            "id": "Cost",
+            "properties": {
+                "operation": {
+                    "$ref": "#/definitions/OperationCost",
+                    "description": "The operation cost",
+                    "id": "OperationCost",
+                    "title": "operation"
+                },
+                "overage": {
+                    "$ref": "#/definitions/OverageCost",
+                    "description": "The overage cost",
+                    "id": "OverageCost",
+                    "title": "overage"
+                }
+            },
+            "title": "Cost",
+            "type": "object"
+        },
+        "Infrastructure": {
+            "additionalProperties": {
+                "type": "string"
+            },
+            "description": "Provides information about tooling used for SLA storage, calculation, governance, etc.",
+            "id": "Infrastructure",
+            "properties": {
+                "monitor": {
+                    "description": "Location of the SLA Metrics endpoint accordingly to the Basic SLA Management Service spec.",
+                    "examples": [
+                        "https://monitor.sla4oai.governify.io/v1/"
+                    ],
+                    "format": "uri",
+                    "title": "monitor",
+                    "type": "string"
+                },
+                "supervisor": {
+                    "description": "Location of the SLA Check service accordingly to the Basic SLA Management Service spec.",
+                    "examples": [
+                        "https://supervisor.sla4oai.governify.io/v2/"
+                    ],
+                    "format": "uri",
+                    "title": "supervisor",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "monitor",
+                "supervisor"
+            ],
+            "title": "Infrastructure",
+            "type": "object"
+        },
+        "Limit": {
+            "description": "The allowed limits of the request.",
+            "id": "Limit",
+            "properties": {
+                "cost": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/Cost"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ],
+                    "default": 0,
+                    "description": "Cost associated to this plan. Defaults to 0 if unspecified.",
+                    "examples": [
+                        "0",
+                        "9.99"
+                    ],
+                    "title": "cost"
+                },
+                "custom": {
+                    "type": "boolean",
+                    "description": "Whether this limit has a custom value. Defaults to false.",
+                    "examples": [
+                        "true",
+                        "false"
+                    ],
+                    "title": "custom"
+                },
+                "max": {
+                    "anyOf": [
+                        {
+                            "enum": [
+                                "unlimited"
+                            ],
+                            "type": "string"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ],
+                    "description": "Max value that can be accepted.",
+                    "examples": [
+                        "0",
+                        "5000",
+                        "unlimited"
+                    ],
+                    "minimum": 0,
+                    "title": "max"
+                },
+                "period": {
+                    "$ref": "#/definitions/Period",
+                    "description": "The period of the limit.",
+                    "id": "Period",
+                    "title": "period"
+                }
+            },
+            "title": "Limit",
+            "type": "object"
+        },
+        "Metric": {
+            "description": "Definitions of metrics with name, types and descriptions",
+            "id": "Metric",
+            "properties": {
+                "description": {
+                    "description": "A brief description of the metric.",
+                    "examples": [
+                        "Number of requests"
+                    ],
+                    "title": "description",
+                    "type": "string"
+                },
+                "format": {
+                    "description": "The extending format for the previously mentioned type. See Data Type Formats for further details.",
+                    "enum": [
+                        "binary",
+                        "byte",
+                        "date",
+                        "date-time",
+                        "double",
+                        "float",
+                        "int32",
+                        "int64",
+                        "string"
+                    ],
+                    "examples": [
+                        "int32",
+                        "int64",
+                        "float",
+                        "double",
+                        "string",
+                        "byte",
+                        "binary",
+                        "date",
+                        "date-time"
+                    ],
+                    "title": "format",
+                    "type": "string"
+                },
+                "relatedMetrics": {
+                    "description": "Related metrics",
+                    "items": {
+                        "$ref": "#/definitions/Metric"
+                    },
+                    "title": "relatedMetrics",
+                    "type": "array"
+                },
+                "resolution": {
+                    "description": "Determine when this metric will be resolved. If value is check the metric will be sent before the calculation of SLA state, else if value is consumption the metric will be sent after consumption.",
+                    "enum": [
+                        "check",
+                        "consumption"
+                    ],
+                    "title": "resolution",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "This is the metric type accordingly to the OAI spec format column.",
+                    "enum": [
+                        "boolean",
+                        "integer",
+                        "number",
+                        "string"
+                    ],
+                    "examples": [
+                        "integer",
+                        "number",
+                        "string",
+                        "boolean"
+                    ],
+                    "title": "type",
+                    "type": "string"
+                },
+                "unit": {
+                    "description": "The unit of the metric.",
+                    "examples": [
+                        "MB/s",
+                        "GB"
+                    ],
+                    "title": "unit",
+                    "type": "string"
+                }
+            },
+            "title": "Metric",
+            "type": "object"
+        },
+        "Metrics": {
+            "additionalProperties": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/Metric"
+                    },
+                    {
+                        "type": "string"
+                    }
+                ]
+            },
+            "description": "A list of metrics to use in the context of the SLA.",
+            "id": "Metrics",
+            "title": "Metrics",
+            "type": "object"
+        },
+        "Operation": {
+            "additionalProperties": {
+                "items": {
+                    "$ref": "#/definitions/Limit"
+                },
+                "type": "array"
+            },
+            "description": "The operations attached to this path.",
+            "id": "Operation",
+            "title": "Operation",
+            "type": "object"
+        },
+        "OperationCost": {
+            "description": "The operation cost",
+            "id": "OperationCost",
+            "properties": {
+                "cost": {
+                    "description": "Cost associated to each volume of operations. For example, each pack of 100 requests will be billed at $0.50",
+                    "examples": [
+                        "0.50"
+                    ],
+                    "title": "cost",
+                    "type": "number"
+                },
+                "volume": {
+                    "description": "Volume of operations to bill. For example, each pack of 100 requests will be billed at $0.50",
+                    "examples": [
+                        "100"
+                    ],
+                    "title": "volume",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "cost",
+                "volume"
+            ],
+            "title": "OperationCost",
+            "type": "object"
+        },
+        "OverageCost": {
+            "description": "The overage cost",
+            "id": "OverageCost",
+            "properties": {
+                "cost": {
+                    "description": "Cost to be billed as overage. For example, once hitted the quota value, each pack of 1000 requests will be billed at $1.50",
+                    "examples": [
+                        "1.50"
+                    ],
+                    "title": "cost",
+                    "type": "number"
+                },
+                "excess": {
+                    "description": "Excess of operations subject to be billed as overage. For example, once hitted the quota value, each pack of 1000 requests will be billed at $1.5",
+                    "examples": [
+                        "1000"
+                    ],
+                    "title": "excess",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "cost",
+                "excess"
+            ],
+            "title": "OverageCost",
+            "type": "object"
+        },
+        "Path": {
+            "additionalProperties": {
+                "$ref": "#/definitions/Operation"
+            },
+            "description": "Describes the API endpoint path quota or rate configurations.",
+            "id": "Path",
+            "title": "Path",
+            "type": "object"
+        },
+        "Period": {
+            "description": "The period of the limit.",
+            "id": "Period",
+            "properties": {
+                "amount": {
+                    "description": "Max value that can be accepted.",
+                    "examples": [
+                        "1",
+                        "30"
+                    ],
+                    "minimum": 1,
+                    "title": "amount",
+                    "type": "number"
+                },
+                "unit": {
+                    "description": "Max value that can be accepted.",
+                    "enum": [
+                        "century",
+                        "day",
+                        "decade",
+                        "forever",
+                        "hour",
+                        "millisecond",
+                        "minute",
+                        "month",
+                        "second",
+                        "week",
+                        "year"
+                    ],
+                    "examples": [
+                        "millisecond",
+                        "second",
+                        "minute",
+                        "hour",
+                        "day",
+                        "week",
+                        "month",
+                        "year",
+                        "decade",
+                        "century",
+                        "forever"
+                    ],
+                    "minimum": 0,
+                    "title": "unit",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "amount",
+                "unit"
+            ],
+            "title": "Period",
+            "type": "object"
+        },
+        "Plan": {
+            "description": "Describes a usage plan for the API with its associate costs and availability.",
+            "id": "Plan",
+            "properties": {
+                "availability": {
+                    "description": "Availability of the service for this plan expressed via time slots using the ISO 8601 time intervals format.",
+                    "examples": [
+                        "2009-10-09T21:30:00.00Z"
+                    ],
+                    "format": "date-time",
+                    "title": "availability",
+                    "type": "string"
+                },
+                "configuration": {
+                    "$ref": "#/definitions/Configuration",
+                    "description": "Configuration parameters for the service tailored for the plan.",
+                    "id": "Configuration",
+                    "title": "configuration"
+                },
+                "pricing": {
+                    "$ref": "#/definitions/Pricing",
+                    "description": "Specific pricing data for this plan. Overrides default pricing data defined before.",
+                    "id": "Pricing",
+                    "title": "pricing"
+                },
+                "quotas": {
+                    "$ref": "#/definitions/Quotas",
+                    "description": "Specific quotas data for this plan. Overrides default quotas data defined before.",
+                    "id": "Quotas",
+                    "title": "quotas"
+                },
+                "rates": {
+                    "$ref": "#/definitions/Rates",
+                    "description": "Specific rates data for this plan. Overrides default rates data defined before.",
+                    "id": "Rates",
+                    "title": "rates"
+                }
+            },
+            "title": "Plan",
+            "type": "object"
+        },
+        "Plans": {
+            "additionalProperties": {
+                "$ref": "#/definitions/Plan"
+            },
+            "description": "A set of plans to define different service levels per plan.",
+            "id": "Plans",
+            "title": "Plans",
+            "type": "object"
+        },
+        "Pricing": {
+            "description": "Global pricing data.",
+            "id": "Pricing",
+            "properties": {
+                "cost": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/Cost"
+                        },
+                        {
+                            "enum": [
+                                "custom"
+                            ],
+                            "type": "string"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ],
+                    "default": 0,
+                    "description": "Cost associated with this service. Defaults to 0 if unspecified.\nCustom: unknown pricing until contacting the company",
+                    "examples": [
+                        "0",
+                        "9.99",
+                        "custom"
+                    ],
+                    "title": "cost"
+                },
+                "custom": {
+                    "type": "boolean",
+                    "description": "Whether this plan has a custom price. Defaults to false.",
+                    "examples": [
+                        "true",
+                        "false"
+                    ],
+                    "title": "custom"
+                },
+                "currency": {
+                    "default": "USD",
+                    "description": "Currency used to express the cost. Supported currency values are expressed in ISO 4217 format. Samples: USD, EUR, or BTC for US dollar, euro, or bitcoin, respectively. Defaults to USD if unspecified.",
+                    "examples": [
+                        "EUR",
+                        "USD"
+                    ],
+                    "pattern": "^ADF|ADP|AED|AFA|AFN|ALL|AMD|ANG|AOA|AOK|AON|AOR|ARA|ARL|ARP|ARS|ATS|AUD|AWG|AZM|AZN|BAD|BAM|BBD|BDT|BEF|BGL|BGN|BHD|BIF|BMD|BND|BOB|BOP|BOV|BRB|BRC|BRE|BRL|BRN|BRR|BSD|BTN|BWP|BYB|BYN|BYR|BZD|CAD|CDF|CHE|CHF|CHW|CLE|CLF|CLP|CNY|COP|COU|CRC|CSD|CSK|CUC|CUP|CVE|CYP|CZK|DDM|DEM|DJF|DKK|DOP|DZD|ECS|ECV|EEK|EGP|ERN|ESA|ESB|ESP|ETB|EUR|FIM|FJD|FKP|FRF|GBP|GEL|GHC|GHS|GIP|GMD|GNE|GNF|GQE|GRD|GTQ|GWP|HKD|HNL|HRD|HRK|HTG|HUF|IDR|IEP|ILP|ILR|ILS|INR|IQD|IRR|ISJ|ISK|ITL|JMD|JOD|JPY|KES|KGS|KHR|KMF|KPW|KRW|KWD|KYD|KZT|LAK|LBP|LKR|LBP|LKR|LRD|LSL|LTL|LUF|LVL|LYD|MAD|MAF|MCF|MDL|MGA|MGF|MKD|MKN|MLV|MMK|MNT|MOP|MRO|MTL|MUR|MVQ|MVR|MWK|MXN|MXP|MXV|MYR|MZM|MZN|NAD|NGN|NIO|NLG|NOK|NPR|NZD|OMR|PAB|PEN|PGK|PHP|PKR|PLN|PTE|PYG|QAR|RON|RSD|RUB|RWF|SAR|SBD|SCR|SDG|SEK|SGD|SHP|SIT|SKK|SLL|SML|SOS|SRD|SSP|STD|SVC|SYP|SZL|THB|TJS|TMT|TND|TOP|TRY|TTD|TWD|TZS|UAH|UGX|USD|USN|UYI|UYU|UZS|VAL|VEF|VND|VUV|WST|XAF|XAG|XAU|XBA|XBB|XBC|XBD|XBT|XCD|XDR|XFU|XOK|XPD|XPF|XPT|XSU|XTS|XUA|YER|ZAR|ZMW|ZWL$",
+                    "title": "currency",
+                    "type": "string"
+                },
+                "period": {
+                    "$ref": "#/definitions/Period",
+                    "description": "The period of the limit",
+                    "id": "Period",
+                    "title": "period"
+                }
+            },
+            "title": "Pricing",
+            "type": "object"
+        },
+        "Quotas": {
+            "additionalProperties": {
+                "$ref": "#/definitions/Path"
+            },
+            "description": "Global quotas, these are the default quotas, but they could be overridden by each plan later.",
+            "id": "Quotas",
+            "title": "Quotas",
+            "type": "object"
+        },
+        "Rates": {
+            "additionalProperties": {
+                "$ref": "#/definitions/Path"
+            },
+            "description": "Global rates, these are the default rates, but they could be overridden by each plan later.",
+            "id": "Rates",
+            "title": "Rates",
+            "type": "object"
+        },
+        "Validity": {
+            "description": "Availability of the service",
+            "id": "Validity",
+            "properties": {
+                "effectiveDate": {
+                    "description": "The starting date of the SLA agreement using the ISO 8601 time intervals format.",
+                    "examples": [
+                        "2009-10-09T21:30:00.00Z"
+                    ],
+                    "format": "date-time",
+                    "title": "effectiveDate",
+                    "type": "string"
+                },
+                "expirationDate": {
+                    "description": "The expiration date of the SLA agreement using the ISO 8601 time intervals format.",
+                    "examples": [
+                        "2015-11-15T23:30:00.00Z"
+                    ],
+                    "format": "date-time",
+                    "title": "expirationDate",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "effectiveDate"
+            ],
+            "title": "Validity",
+            "type": "object"
+        }
+    },
+    "description": "SLA4OAI root schema",
+    "id": "SLA4OAI",
+    "properties": {
+        "availability": {
+            "description": "Define the default availability, later each plan can be override it, via time slots using the ISO 8601 time intervals format.",
+            "examples": [
+                "2009-10-09T21:30:00.00Z"
+            ],
+            "format": "date-time",
+            "title": "availability",
+            "type": "string"
+        },
+        "configuration": {
+            "$ref": "#/definitions/Configuration",
+            "description": "Define the default configurations, later each plan can be override it.",
+            "id": "Configuration",
+            "title": "configuration"
+        },
+        "context": {
+            "$ref": "#/definitions/Context",
+            "description": "Holds the main information of the SLA context.",
+            "title": "context"
+        },
+        "infrastructure": {
+            "$ref": "#/definitions/Infrastructure",
+            "description": "Provides information about tooling used for SLA storage, calculation, governance, etc.",
+            "title": "infrastructure"
+        },
+        "metrics": {
+            "$ref": "#/definitions/Metrics",
+            "description": "A list of metrics to use in the context of the SLA.",
+            "title": "metrics"
+        },
+        "plans": {
+            "$ref": "#/definitions/Plans",
+            "description": "A set of plans to define different service levels per plan.",
+            "id": "Plans",
+            "title": "plans"
+        },
+        "pricing": {
+            "$ref": "#/definitions/Pricing",
+            "description": "Global pricing data.",
+            "id": "Pricing",
+            "title": "pricing"
+        },
+        "quotas": {
+            "$ref": "#/definitions/Quotas",
+            "description": "Global quotas, these are the default quotas, but they could be overridden by each plan later.",
+            "id": "Quotas",
+            "title": "quotas"
+        },
+        "rates": {
+            "$ref": "#/definitions/Rates",
+            "description": "Global rates, these are the default rates, but they could be overridden by each plan later.",
+            "id": "Rates",
+            "title": "rates"
+        }
+    },
+    "required": [
+        "context",
+        "infrastructure",
+        "metrics"
+    ],
+    "type": "object"
+}
+
