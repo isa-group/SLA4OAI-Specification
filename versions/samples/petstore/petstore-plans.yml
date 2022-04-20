@@ -1,65 +1,17 @@
+sla4oai: 1.0
 context:
   id: petstore-sample
-  sla: 1.0
   type: plans
-  api: ./petstore-service.yml
+  api:
+    $ref: ./petstore-service.yml
   provider: ISAGroup
-infrastructure:
-  supervisor: http://supervisor.sla4oai.governify.io/v1/
-  monitor: http://monitor.sla4oai.governify.io/v1/
 metrics:
-  animalTypes:
+  requests:
     type: integer
     format: int64
-    description: Number of different animal types.
-    resolution: check
-  resourceInstances:
-    type: integer
-    format: int64
-    description: Number of pet resources
-    resolution: consumption
+    description: "Number of requests"
   requests:
     $ref: ./metrics.yml#requests
-  responseTimeMs:
-    $ref: ./metrics.yml#responseTimeMs
-pricing:
-  cost: 0
-  currency: EUR
-  billing: monthly
-availability: R/00:00:00Z/15:00:00Z
-configuration:
-  filteringType: none
-  xmlFormat: 'false'
-quotas:
-  /pets:
-    get:
-      requests:
-        - max: 10
-          period: minutely
-          scope: account
-        - max: 40
-          period: hourly
-          scope: tenant
-    post:
-      requests:
-        - max: 3
-          period: minutely
-      resourceInstances:
-        - max: 5
-      animalTypes:
-        - max: 2
-rates:
-  /pets/{id}:
-    get:
-      requests:
-        - max: 1
-          period: secondly
-guarantees:
-  global:
-    global:
-      - objective: responseTimeMs <= 800
-        period: daily
-        window: dynamic
 plans:
   free:
     rates:
@@ -69,12 +21,10 @@ plans:
             - max: 1
               period: secondly
   pro:
-    availability: R/00:00:00Z/23:59:59Z
     pricing:
-      cost: 50
-    configuration:
-      filteringType: multipleTags
-      xmlFormat: 'true'
+      cost: 5
+      currency: EUR
+      billing: monthly
     quotas:
       /pets:
         get:
@@ -93,9 +43,3 @@ plans:
             - max: 500
           animalTypes:
             - max: 5
-    guarantees:
-      global:
-        global:
-          - objective: responseTimeMs <= 250
-            period: daily
-            window: dynamic
