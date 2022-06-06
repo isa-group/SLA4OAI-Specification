@@ -24,13 +24,15 @@
       {
         "properties": {
           "rates": false,
-          "quotas": false
+          "quotas": false,
+          "plan": false
         },
         "required": ["plans"]
       },
       {
         "properties": {
-          "plans": false
+          "plans": false,
+          "plan": false
         },
         "anyOf": [
           {"required": ["rates"]},
@@ -44,8 +46,7 @@
       "plans": false
     },
     "anyOf": [
-      {"required": ["rates"]},
-      {"required": ["quotas"]}
+      {"required": ["plan"]}
     ]
   },
   "properties": {
@@ -58,6 +59,11 @@
           "$ref": "#/definitions/Metrics",
           "description": "A list of metrics to use in the context of the SLA.",
           "title": "metrics"
+      },
+      "plan": {
+          "$ref": "#/definitions/Plan",
+          "description": "In case the SLA is of type agreement, this describes the selected plan.",
+          "title": "plan"
       },
       "plans": {
           "$ref": "#/definitions/Plans",
@@ -99,12 +105,17 @@
                   "$ref": "#/definitions/Reference",
                   "title": "api"
               },
-              "consumer": {
-                  "description": "Consumer information, data about the entity that consumes the service. This field is required if the context type is agreement.",
+              "apikeys": {
+                  "description": "List of apikeys.",
+                  "title": "apikeys",
+                  "type": "array"
+              },
+              "customer": {
+                  "description": "Customer information, data about the entity that consumes the service. This field is required if the context type is agreement.",
                   "examples": [
-                      "MyConsumer"
+                      "MyCustomer"
                   ],
-                  "title": "consumer",
+                  "title": "customer",
                   "type": "string"
               },
               "id": {
@@ -135,6 +146,29 @@
                   ],
                   "title": "type",
                   "type": "string"
+              },
+              "validity": {
+                  "description": "Indicates the period in which the plan is valid.",
+                  "properties": {
+                    "from":{
+                      "description": "The contractual starting date.",
+                      "examples": [
+                          "20220518T221000Z"
+                      ],
+                      "format": "date-time",
+                      "title": "from",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The contractual ending date.",
+                      "examples": [
+                          "20220823T221000Z"
+                      ],
+                      "format": "date-time",
+                      "title": "from",
+                      "type": "string"
+                    }
+                  }
               }
           },
           "required": [
@@ -152,12 +186,16 @@
           "then": {
             "required": [
                 "provider"
-            ]
+            ],
+            "properties": {
+              "validity": false,
+              "apikeys": false
+            }
           },
           "else": {
             "required": [
                 "provider",
-                "consumer"
+                "customer"
             ]
           },
           "title": "Context",
@@ -315,6 +353,16 @@
                   "format": "date-time",
                   "title": "availability",
                   "type": "string"
+              },
+              "name": {
+                "description": "The name of the plan.",
+                "examples": [
+                    "free",
+                    "basic",
+                    "pro"
+                ],
+                "title": "name",
+                "type": "string"
               },
               "pricing": {
                   "$ref": "#/definitions/Pricing",
