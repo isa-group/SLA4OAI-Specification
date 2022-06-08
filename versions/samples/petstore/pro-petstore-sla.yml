@@ -1,39 +1,42 @@
-sla4oai: 1.0
+sla4oai: 1.0.0
 context:
   id: petstore-sample-tenant1
   type: agreement
   provider: ISAGroup
-  consumer: tenant1
+  customer: tenant1
   api:
     $ref: ./petstore-service.yml
+  apikeys:
+    - user1abc
+    - user2abc
 metrics:
   requests:
     type: integer
     format: int64
     description: "Number of requests"
-  requests:
-    $ref: ./metrics.yml#requests
-quotas:
-  /pets:
-    get:
-      requests:
-        - max: 20
-          period: minutely
-          scope: account
-        - max: 100
-          period: hourly
-          scope: tenant
-    post:
-      requests:
-        - max: 100
-          period: minutely
-      resourceInstances:
-        - max: 500
-      animalTypes:
-        - max: 5
-rates:
-  /pets/{id}:
-    get:
-      requests:
-        - max: 3
-          period: secondly
+plan:
+  name: pro
+  quotas:
+    /pets:
+      get:
+        requests:
+          - max: 20
+            period: minute
+            scope: account
+          - max: 100
+            period: hour
+            scope: tenant
+      post:
+        requests:
+          - max: 100
+            period: minute
+        resourceInstances:
+          - max: 500
+        animalTypes:
+          - max: 5
+  rates:
+    /pets/{id}:
+      get:
+        requests:
+          - max: 3
+            period: second
