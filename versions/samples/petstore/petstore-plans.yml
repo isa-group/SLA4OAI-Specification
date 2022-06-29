@@ -1,4 +1,4 @@
-sla4oai: 1.0.0
+sla4oas: 1.0.0
 context:
   id: petstore-sample
   type: plans
