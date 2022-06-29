@@ -1,8 +1,8 @@
 # SLA for the OpenAPI Initiative Specification
 
-**SLA4OAI** is an open source standard for describing SLA in APIs.
+**SLA4OAS** is an open source standard for describing SLA in APIs.
 
-Based on the standards proposed by the [OpenAPI Initiative](https://openapis.org), SLA4OAI builds on top of the [OpenAPI Specification](https://openapis.org/specification) by defining a specification extension that describes Service Level Agreements (SLAs) for APIs.
+Based on the standards proposed by the [OpenAPI Initiative](https://openapis.org), SLA4OAS builds on top of the [OpenAPI Specification](https://openapis.org/specification) by defining a specification extension that describes Service Level Agreements (SLAs) for APIs.
 
 This SLA definition in a neutral vendor flavor will allow fostering innovation in the area where APIs expose and documents its SLA,
 API Management tools can import and measure such key metrics and composed SLAs for composed services aggregated way in a standard way.
@@ -17,7 +17,7 @@ This specification is an on-going work developed by the [SLA4OAI Technical Commi
 |Version  | Date         | Notes            |
 |:------- |:------------ |:---------------- |
 | 1.0.0   | 2020-11-16   | Initial draft.   |
-| 1.0.1   | 2022-06-08   | Updates.         |
+| 1.0.1   | 2022-06-08   | Renamed SLA Object's `sla` field to `sla4oas`.<br>Added field `plan` to the SLA Object (must be used in SLAs of type Agreement).<br>Added fields `quotas` and `rates` to the SLA Object (can be used in SLAs of type Plans).<br>Added fields `type`, `customer`, `apikeys` and `validity` to the Context Object.<br>Added field `name` to the Plan Object. |
 
 
 ## Extension Format
@@ -41,13 +41,13 @@ The lifecycle of any SLA agreement has two phases:
 
 ##  Specification
 
-A **SLA4OAI** document is built as an extension to a given [OAS](https://github.com/OAI/OpenAPI-Specification) document. This extension will add an SLA definition to all or part of the services exposed in the API by means of different plans that include limitations over the usage of the API. Specifically, a full SLA definition is a `YAML` (or `JSON`) document composed of the structure of an [SLA Object](#sla-object).
+A **SLA4OAS** document is built as an extension to a given [OAS](https://github.com/OAI/OpenAPI-Specification) document. This extension will add an SLA definition to all or part of the services exposed in the API by means of different plans that include limitations over the usage of the API. Specifically, a full SLA definition is a `YAML` (or `JSON`) document composed of the structure of an [SLA Object](#sla-object).
 
 
 **Simple Example:**
 
 ```yaml
-sla4oai: 1.0.0
+sla4oas: 1.0.0
 context:
   id: petstore-sample
   type: plans
@@ -95,7 +95,7 @@ The SLA Object represents the top placeholder for the SLA Document.
 
 | Field Name | Type                                  | Description  |
 | :--------- | :------------------------------------ | :----------- |
-| sla4oai    | `string`                              | **Required** Identifies the version of the SLA4OAI used. |
+| sla4oas    | `string`                              | **Required** Identifies the version of the SLA4OAS used. |
 | context    | [`ContextObject`](#1-context-object)  | **Required** Holds the main information of the SLA context.  |
 | metrics    | [`MetricsObject`](#2-metrics-object)  | **Required** A list of metrics to use in the context of the SLA.  |
 | plan       | [`PlanObject`](#31-plan-object)       | **Optional** Describes a usage plan for the API with its associate costs and availability. |
