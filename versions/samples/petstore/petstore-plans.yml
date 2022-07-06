@@ -1,0 +1,43 @@
+sla4oas: 1.0.0
+context:
+  id: petstore-sample
+  type: plans
+  api:
+    $ref: ./petstore-service.yml
+  provider: ISAGroup
+metrics:
+  requests:
+    type: integer
+    format: int64
+    description: "Number of requests"
+plans:
+  free:
+    rates:
+      /pets/{id}:
+        get:
+          requests:
+            - max: 1
+              period: second
+  pro:
+    pricing:
+      cost: 5
+      currency: EUR
+      billing: monthly
+    quotas:
+      /pets:
+        get:
+          requests:
+            - max: 20
+              period: minute
+              scope: account
+            - max: 100
+              period: hour
+              scope: tenant
+        post:
+          requests:
+            - max: 100
+              period: minute
+          resourceInstances:
+            - max: 500
+          animalTypes:
+            - max: 5
