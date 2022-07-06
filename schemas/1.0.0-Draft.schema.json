@@ -1,12 +1,12 @@
 {
-  "id": "SLA4OAI",
+  "id": "SLA4OAS",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "SLA4OAI root schema",
+  "description": "SLA4OAS root schema",
   "type": "object",
   "required": [
       "context",
       "metrics",
-      "sla4oai"
+      "sla4oas"
   ],
   "if": {
     "properties": {
@@ -80,7 +80,7 @@
           "description": "Global rates, these are the default rates.",
           "title": "rates"
       },
-      "sla4oai": {
+      "sla4oas": {
           "default": "1.0",
           "description": "Indicates the version of the SLA format.",
           "examples": [
@@ -88,7 +88,7 @@
               "1.0.0"
           ],
           "pattern": "(?:^\\d.\\d.\\d$)|^(?:^\\d.\\d$)",
-          "title": "sla4oai",
+          "title": "sla4oas",
           "type": "string"
       }
   },
