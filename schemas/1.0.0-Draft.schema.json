@@ -348,9 +348,8 @@
               "availability": {
                   "description": "Availability of the service for this plan expressed via time slots using the ISO 8601 time intervals format.",
                   "examples": [
-                      "2022-11-23T20:20:40+00:00"
+                      "R/00:00:00Z/23:59:59Z"
                   ],
-                  "format": "date-time",
                   "title": "availability",
                   "type": "string"
               },
