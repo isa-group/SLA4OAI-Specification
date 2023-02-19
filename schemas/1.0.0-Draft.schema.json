@@ -229,6 +229,13 @@
                   "$ref": "#/definitions/Period",
                   "description": "The period of the limit.",
                   "title": "period"
+              },
+              "type": {
+                "description": "Specifies how the API handles requests to the given endpoint, can be one of 'burst' or 'average'. The default value is 'burst'",
+                "enum": ["burst","average"],
+                "title": "type",
+                "type": "string",
+                "default": "burst"
               }
           },
           "required": ["max"],

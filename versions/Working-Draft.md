@@ -376,11 +376,18 @@ The allowed limits of the metric (e.g. *requests*).
 | :------------- | :--------- | :------------|
 | max            | `number`   |  **Required** Maximum value that can be reached so the limit is not violated. |
 | period         | `string`   |  **Optional** The period specified for the given limit; it should be one of the following possible values: `second`, `minute`, `hour`, `day`, `month` or `year`. In case it is not specified, it would be a **permanent** limit over the metric. |
+| type           | `string`   |  **Optional** Specifies how the API handles requests to the given endpoint, can be one of `burst` or `average` (for further explanation see below). The default value is `burst`. |
+
+The difference between `burst` and `average` is better explained with an example. Supposing an endpoint that allows 10 requests per minute:
+
+- `average`: Would allow an average of 10 requests per minute, meaning only one request every 6 seconds would be accepted. Any other request received within these 6-second intervals would be rejected with HTTP code 429. 
+- `burst`: Would allow all 10 requests to be served at the any time during the minute. Once 10 requests have been served and until the end of the minute, all successive requests would be rejected with HTTP code 429.
 
 **Example:**
 ```yaml
 max: 2
 period: second
+type: burst
 ```
 
 ## References
