@@ -22,21 +22,18 @@ plan:
         requests:
           - max: 20
             period: minute
-            scope: account
+            type: burst
           - max: 100
             period: hour
-            scope: tenant
+            type: average
       post:
         requests:
           - max: 100
             period: minute
-        resourceInstances:
-          - max: 500
-        animalTypes:
-          - max: 5
   rates:
     /pets/{id}:
       get:
         requests:
           - max: 3
             period: second
+            type: average
